@@ -17,10 +17,7 @@ apiClient.interceptors.request.use(
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token');
       if (token) {
-        config.headers = {
-          ...config.headers,
-          Authorization: `Bearer ${token}`,
-        };
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     
@@ -70,8 +67,9 @@ apiClient.interceptors.response.use(
         case 422:
           // Validation errors
           if (data.errors) {
-            Object.values(data.errors).forEach((error: any) => {
-              toast.error(error);
+            Object.values(data.errors).forEach((error: unknown) => {
+              const errorMessage = typeof error === 'string' ? error : 'Validation error';
+              toast.error(errorMessage);
             });
           } else {
             toast.error(data.message || 'Validation failed');
